@@ -15,7 +15,9 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="60dp">
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:minHeight="60dp">
 
         <TextView
             android:id="@+id/text_battery"
@@ -30,7 +32,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
         <GridLayout
             android:columnCount="3"
@@ -38,7 +41,8 @@
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_gravity="bottom">
 
             <ImageButton android:id="@+id/button_walk_forward"
                 android:text="Forward"
@@ -80,7 +84,8 @@
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_weight="1"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom">
 
         </GridLayout>
 
@@ -90,7 +95,8 @@
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_gravity="bottom">
 
             <ImageButton android:id="@+id/button_jump"
                 android:src="@drawable/move_button_jump"
