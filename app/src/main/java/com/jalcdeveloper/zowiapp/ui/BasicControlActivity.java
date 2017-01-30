@@ -17,6 +17,11 @@ import com.jalcdeveloper.zowiapp.io.ZowiProtocol;
 import java.util.Timer;
 import java.util.TimerTask;
 
+// Sensores de movimiento
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.content.Context;
+
 public class BasicControlActivity extends ImmersiveActivity {
 
     private static final String TAG = BasicControlActivity.class.getSimpleName();
@@ -32,6 +37,10 @@ public class BasicControlActivity extends ImmersiveActivity {
     private ImageButton buttonCrusaitoRight;
     private ImageButton buttonCrusaitoLeft;
     private TextView textBattery;
+    
+    // sensores de movimiento
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -67,6 +76,10 @@ public class BasicControlActivity extends ImmersiveActivity {
         buttonSwing.setOnTouchListener(swingOnTouchListener);
         buttonCrusaitoLeft.setOnTouchListener(crusaitoLeftOnTouchListener);
         buttonCrusaitoRight.setOnTouchListener(crusaitoRightOnTouchListener);
+        
+        // sensores de movimiento
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
