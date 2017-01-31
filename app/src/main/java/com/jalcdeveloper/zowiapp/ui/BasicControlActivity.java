@@ -24,6 +24,8 @@ import android.content.Context;
 // clases para poder captar cambios en los sensores
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+// valor absoluto
+import java.lang.Math;
 
 public class BasicControlActivity extends ImmersiveActivity implements SensorEventListener {
 
@@ -44,8 +46,9 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // sensores de movimiento
     private SensorManager mSensorManager;
     private Sensor mSensor;
-    // vector para guardar los valores devueltos por el sensor de rotación
+    // vector para guardar los valores devueltos por el sensor de rotación y los previos
     private float[] mRot;
+    private float[] prev_mRot;
     // timestamp del último movimiento detectado
     private float timestamp;
 
@@ -119,7 +122,6 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     @Override
     public void onSensorChanged(SensorEvent event) {
         // detectamos si se ha producido un giro
-        Log.d(TAG, "Dentro del onSensorChanged");
         if (this.timestamp != 0) {
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
                 // values es un vector de float donde:
@@ -129,9 +131,17 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 // values[3]: cos(theta/2)
                 // values[4]: estimated heading accuracy (in radians) or -1 if unavailable
                 this.mRot = event.values.clone();
+                Log.d(TAG, "mRot = " + mRot[0] + " " + mRot[1] + " " + mRot[2]);
+                Log.d(TAG, "prev_mRot = " + prev_mRot[0] + " " + prev_mRot[1] + " " + prev_mRot[2]);
+                float[] resta = new float[mRot.length];
+                for (int i=0; i<mRot.length; i++) {
+                    resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
+                }
+                Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2] + "\n\n");
             }
         }
         this.timestamp = event.timestamp;
+        this.prev_mRot = event.values.clone();
     }
 
     @Override
