@@ -1,6 +1,7 @@
 package com.jalcdeveloper.zowiapp.ui;
 
 import android.os.Bundle;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.jalcdeveloper.zowiapp.io.ZowiProtocol;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Arrays;
+import java.util.Collections;
 
 // Sensores de movimiento
 import android.hardware.SensorManager;
@@ -138,6 +141,8 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
                 }
                 Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2] + "\n\n");
+                Arrays.sort(resta);
+                float max = resta[resta.length-1];
             }
         }
         this.timestamp = event.timestamp;
