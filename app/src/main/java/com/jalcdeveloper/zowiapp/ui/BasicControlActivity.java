@@ -141,8 +141,38 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
                 }
                 Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2] + "\n\n");
+                float[] aux = resta;
                 Arrays.sort(resta);
                 float max = resta[resta.length-1];
+                switch (Arrays.asList(aux).indexOf(max)){
+                    case 0:
+                        Log.d(TAG, "Se mueve en el eje 0");
+                        if (aux[0] >= 0){
+                            Log.d(TAG, "Es positivo");
+                        }
+                        else{
+                            Log.d(TAG, "Es negativo");
+                        }
+                        break;
+                    case 1:
+                        Log.d(TAG, "Se mueve en el eje 1");
+                        if (aux[1] >= 0){
+                            Log.d(TAG, "Es positivo");
+                        }
+                        else{
+                            Log.d(TAG, "Es negativo");
+                        }
+                        break;
+                    case 2:
+                        Log.d(TAG, "Se mueve en el eje 2");
+                        if (aux[2] >= 0){
+                            Log.d(TAG, "Es positivo");
+                        }
+                        else{
+                            Log.d(TAG, "Es negativo");
+                        }
+                        break;
+                }
             }
         }
         this.timestamp = event.timestamp;
