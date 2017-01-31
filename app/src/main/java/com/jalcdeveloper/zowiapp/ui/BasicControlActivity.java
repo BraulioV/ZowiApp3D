@@ -15,6 +15,7 @@ import com.jalcdeveloper.zowiapp.io.Zowi;
 import com.jalcdeveloper.zowiapp.io.ZowiHelper;
 import com.jalcdeveloper.zowiapp.io.ZowiProtocol;
 
+import java.security.PrivilegedAction;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private ImageButton buttonCrusaitoRight;
     private ImageButton buttonCrusaitoLeft;
     private TextView textBattery;
-    
+
     // sensores de movimiento
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -54,6 +55,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private float[] prev_mRot;
     // timestamp del último movimiento detectado
     private float timestamp;
+    private float EPSILON = 0.0005f;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -157,34 +159,34 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 //float[] aux = resta;
                 //Arrays.sort(resta);
                 //float max = resta[resta.length-1];
-                switch (this.max(resta)){
-                    case 0:
-                        Log.d(TAG, "Se mueve en el eje 0");
-                        if (mRot[0] >= 0){
-                            Log.d(TAG, "Es positivo");
-                        }
-                        else{
-                            Log.d(TAG, "Es negativo");
-                        }
-                        break;
-                    case 1:
-                        Log.d(TAG, "Se mueve en el eje 1");
-                        if (mRot[1] >= 0){
-                            Log.d(TAG, "Es positivo");
-                        }
-                        else{
-                            Log.d(TAG, "Es negativo");
-                        }
-                        break;
-                    case 2:
-                        Log.d(TAG, "Se mueve en el eje 2");
-                        if (mRot[2] >= 0){
-                            Log.d(TAG, "Es positivo");
-                        }
-                        else{
-                            Log.d(TAG, "Es negativo");
-                        }
-                        break;
+                int ind = this.max(resta);
+                if(Math.abs(mRot[ind]) > EPSILON) {
+                    switch (ind) {
+                        case 0:
+                            Log.d(TAG, "Se mueve en el eje 0");
+                            if (mRot[0] >= 0) {
+                                Log.d(TAG, "Es positivo");
+                            } else {
+                                Log.d(TAG, "Es negativo");
+                            }
+                            break;
+                        case 1:
+                            Log.d(TAG, "Se mueve en el eje 1");
+                            if (mRot[1] >= 0) {
+                                Log.d(TAG, "Es positivo");
+                            } else {
+                                Log.d(TAG, "Es negativo");
+                            }
+                            break;
+                        case 2:
+                            Log.d(TAG, "Se mueve en el eje 2");
+                            if (mRot[2] >= 0) {
+                                Log.d(TAG, "Es positivo");
+                            } else {
+                                Log.d(TAG, "Es negativo");
+                            }
+                            break;
+                    }
                 }
             }
         }
