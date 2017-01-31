@@ -121,9 +121,22 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
     }
 
+    private int max(float[] list){
+        int ind = -1;
+        float max = -9999999;
+        for (int i = 0; i < list.length; i++) {
+            if(list[i] > max) {
+                max = list[i];
+                ind = i;
+            }
+        }
+        return ind;
+    }
+
     // método para escuchar cambios en los valores de los sensores
     @Override
     public void onSensorChanged(SensorEvent event) {
+
         // detectamos si se ha producido un giro
         if (this.timestamp != 0) {
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
@@ -141,13 +154,13 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
                 }
                 Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2] + "\n\n");
-                float[] aux = resta;
-                Arrays.sort(resta);
-                float max = resta[resta.length-1];
-                switch (Arrays.asList(aux).indexOf(max)){
+                //float[] aux = resta;
+                //Arrays.sort(resta);
+                //float max = resta[resta.length-1];
+                switch (this.max(resta)){
                     case 0:
                         Log.d(TAG, "Se mueve en el eje 0");
-                        if (aux[0] >= 0){
+                        if (resta[0] >= 0){
                             Log.d(TAG, "Es positivo");
                         }
                         else{
@@ -156,7 +169,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                         break;
                     case 1:
                         Log.d(TAG, "Se mueve en el eje 1");
-                        if (aux[1] >= 0){
+                        if (resta[1] >= 0){
                             Log.d(TAG, "Es positivo");
                         }
                         else{
@@ -165,7 +178,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                         break;
                     case 2:
                         Log.d(TAG, "Se mueve en el eje 2");
-                        if (aux[2] >= 0){
+                        if (resta[2] >= 0){
                             Log.d(TAG, "Es positivo");
                         }
                         else{
