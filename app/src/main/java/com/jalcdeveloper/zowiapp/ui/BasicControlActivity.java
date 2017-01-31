@@ -21,8 +21,11 @@ import java.util.TimerTask;
 import android.hardware.SensorManager;
 import android.hardware.Sensor;
 import android.content.Context;
+// clases para poder captar cambios en los sensores
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 
-public class BasicControlActivity extends ImmersiveActivity {
+public class BasicControlActivity extends ImmersiveActivity implements SensorEventListener {
 
     private static final String TAG = BasicControlActivity.class.getSimpleName();
 
@@ -41,6 +44,8 @@ public class BasicControlActivity extends ImmersiveActivity {
     // sensores de movimiento
     private SensorManager mSensorManager;
     private Sensor mSensor;
+    // vector para guardar los valores devueltos por el sensor de rotación
+    private float[] mRot;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -79,7 +84,7 @@ public class BasicControlActivity extends ImmersiveActivity {
         
         // sensores de movimiento
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
@@ -106,12 +111,27 @@ public class BasicControlActivity extends ImmersiveActivity {
 
     }
 
+    // método para escuchar cambios en los valores de los sensores
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Log.d(TAG, "DENTRO DEL onSensorChanged");
+        // detectamos si se ha producido un giro
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            mRot = event.values.clone();
+            Log.d(TAG, "ROTACION: " + mRot);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
     /**
      *
      **/
     private View.OnTouchListener walkForwardOnTouchListener = new View.OnTouchListener(){
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
