@@ -46,6 +46,8 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private Sensor mSensor;
     // vector para guardar los valores devueltos por el sensor de rotación
     private float[] mRot;
+    // timestamp del último movimiento detectado
+    private float timestamp;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -85,6 +87,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         // sensores de movimiento
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        this.timestamp = 0;
 
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
@@ -102,6 +105,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
             }
         }, 0, 5000);
         super.onResume();
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -114,12 +118,20 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // método para escuchar cambios en los valores de los sensores
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d(TAG, "DENTRO DEL onSensorChanged");
         // detectamos si se ha producido un giro
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            mRot = event.values.clone();
-            Log.d(TAG, "ROTACION: " + mRot);
+        Log.d(TAG, "Dentro del onSensorChanged");
+        if (this.timestamp != 0) {
+            if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+                // values es un vector de float donde:
+                // values[0]: x*sin(theta/2)
+                // values[1]: y*sin(theta/2)
+                // values[2]: z*sin(theta/2)
+                // values[3]: cos(theta/2)
+                // values[4]: estimated heading accuracy (in radians) or -1 if unavailable
+                this.mRot = event.values.clone();
+            }
         }
+        this.timestamp = event.timestamp;
     }
 
     @Override
