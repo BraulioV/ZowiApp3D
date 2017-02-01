@@ -9,4 +9,6 @@
 
     <color name="colorbackground">@color/orange_500</color>
 
+    <color name="speechbtn_default">#EEEEEE</color>
+    <color name="speechbtn_listening">#99FFBB</color>
 </resources>

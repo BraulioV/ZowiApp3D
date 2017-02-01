@@ -61,6 +61,9 @@ public class MainVoiceActivity extends VoiceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Set layout
+        setContentView(R.layout.activity_basic_control);
+
         //Initialize the speech recognizer and synthesizer
         initSpeechInputOutput(this);
 
@@ -80,7 +83,7 @@ public class MainVoiceActivity extends VoiceActivity {
             public void onClick(View v) {
                 //Ask the user to speak
                 try {
-                    speak(getResources().getString(R.string.initial_prompt), "ES", ID_PROMPT_QUERY);
+                    speak(getResources().getString(R.string.initial_prompt), "EN", ID_PROMPT_QUERY);
                 } catch (Exception e) {
                     Log.e(LOGTAG, "TTS not accessible");
                 }

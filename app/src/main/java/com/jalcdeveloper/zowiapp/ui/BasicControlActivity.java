@@ -1,9 +1,11 @@
 package com.jalcdeveloper.zowiapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -41,6 +43,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private ImageButton buttonCrusaitoRight;
     private ImageButton buttonCrusaitoLeft;
     private TextView textBattery;
+    private Button speak;
 
     // sensores de movimiento
     private SensorManager mSensorManager;
@@ -76,6 +79,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         buttonCrusaitoLeft = (ImageButton) findViewById(R.id.button_crusaito_left);
         buttonCrusaitoRight = (ImageButton) findViewById(R.id.button_crusaito_right);
         textBattery = (TextView) findViewById(R.id.text_battery);
+        speak = (Button) findViewById(R.id.speech_btn);
 
         buttonWalkForward.setOnTouchListener(walkForwardOnTouchListener);
         buttonWalkBackward.setOnTouchListener(walkBackwardOnTouchListener);
@@ -96,6 +100,12 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
 
+        speak.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent speak_ac = new Intent(getApplicationContext(), MainVoiceActivity.class);
+                startActivity(speak_ac);
+            }
+        });
     }
 
     @Override
