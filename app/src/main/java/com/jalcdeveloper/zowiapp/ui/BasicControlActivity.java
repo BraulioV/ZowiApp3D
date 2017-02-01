@@ -163,12 +163,14 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         // detectamos si se ha producido un giro
         if (this.timestamp != 0) {
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-                // values es un vector de float donde:
-                // values[0]: x*sin(theta/2)
-                // values[1]: y*sin(theta/2)
-                // values[2]: z*sin(theta/2)
-                // values[3]: cos(theta/2)
-                // values[4]: estimated heading accuracy (in radians) or -1 if unavailable
+                /*
+                   values es un vector de float donde:
+                   values[0]: x*sin(theta/2)
+                   values[1]: y*sin(theta/2)
+                   values[2]: z*sin(theta/2)
+                   values[3]: cos(theta/2)
+                   values[4]: estimated heading accuracy (in radians) or -1 if unavailable
+                */
                 this.mRot = event.values.clone();
                 // Log.d(TAG, "mRot = " + mRot[0] + " " + mRot[1] + " " + mRot[2]);
                 // Log.d(TAG, "prev_mRot = " + prev_mRot[0] + " " + prev_mRot[1] + " " + prev_mRot[2]);
@@ -176,9 +178,9 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 for (int i=0; i<mRot.length; i++) {
                     resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
                 }
-                Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2]);
+                //Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2]);
                 int ind = this.max(resta);
-                Log.d(TAG, "Maximo = " + ind);
+                //Log.d(TAG, "Maximo = " + ind);
                 if(resta[ind] > EPSILON) {
                     if (last_move != -1) {
                         stopZowi();
