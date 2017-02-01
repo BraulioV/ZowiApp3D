@@ -55,7 +55,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private float[] prev_mRot;
     // timestamp del último movimiento detectado
     private float timestamp;
-    private float EPSILON = 0.01f;
+    private float EPSILON = 0.1f;
     private int last_move = -1;
 
     private Zowi zowi;
@@ -124,11 +124,11 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
     }
 
-    // devuelve el máximo elemento de un array
+    // devuelve el máximo elemento entre los tres primeros elementos un array
     private int max(float[] list){
         int ind = -1;
         float max = -9999999;
-        for (int i = 0; i < list.length; i++) {
+        for (int i = 0; i < 3; i++) {
             if(list[i] > max) {
                 max = list[i];
                 ind = i;
@@ -153,7 +153,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 this.buttonTurnRight.setPressed(false);
                 break;
         }
-        zowiHelper.stop(zowi);
+        //zowiHelper.stop(zowi);
     }
 
     // método para escuchar cambios en los valores de los sensores
@@ -177,10 +177,8 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
                 }
                 Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2]);
-                // float[] aux = resta;
-                // Arrays.sort(resta);
-                // float max = resta[resta.length-1];
                 int ind = this.max(resta);
+                Log.d(TAG, "Maximo = " + ind);
                 if(resta[ind] > EPSILON) {
                     if (last_move != -1) {
                         stopZowi();
@@ -190,30 +188,30 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                             Log.d(TAG, "Se mueve en el eje 0");
                             if (mRot[0] >= 0) {
                                 Log.d(TAG, "Es positivo");
-                                last_move = 0;
+                                last_move = 3;
                             } else {
                                 Log.d(TAG, "Es negativo");
-                                last_move = 1;
+                                last_move = 2;
                             }
                             break;
                         case 1:
                             Log.d(TAG, "Se mueve en el eje 1");
                             if (mRot[1] >= 0) {
                                 Log.d(TAG, "Es positivo");
-                                last_move = -1;
+                                last_move = 0;
                             } else {
                                 Log.d(TAG, "Es negativo");
-                                last_move = -1;
+                                last_move = 1;
                             }
                             break;
                         case 2:
                             Log.d(TAG, "Se mueve en el eje 2");
                             if (mRot[2] >= 0) {
                                 Log.d(TAG, "Es positivo");
-                                last_move = 2;
+                                last_move = -1;
                             } else {
                                 Log.d(TAG, "Es negativo");
-                                last_move = 3;
+                                last_move = -1;
                             }
                             break;
                     }
@@ -221,19 +219,19 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     switch (last_move) {
                         case 0:
                             this.buttonWalkForward.setPressed(true);
-                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
+                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
                             break;
                         case 1:
                             this.buttonWalkBackward.setPressed(true);
-                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
+                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
                             break;
                         case 2:
                             this.buttonTurnLeft.setPressed(true);
-                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.LEFT_DIR);
+                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.LEFT_DIR);
                             break;
                         case 3:
                             this.buttonTurnRight.setPressed(true);
-                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.RIGHT_DIR);
+                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.RIGHT_DIR);
                             break;
                     }
                 }
