@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">ZowiApp DIY</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+
+    <!-- Texts -->
+    <string name="speechbtn_default">Hablar</string>
+    <string name="speechbtn_listening">Escuchando...</string>
+    <string name="initial_prompt">Dile algo a Zowi</string>
+
+    <!-- Colors -->
+    <color name="speechbtn_default">#EEEEEE</color>
+    <color name="speechbtn_listening">#99FFBB</color>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

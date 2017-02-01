@@ -1,11 +1,9 @@
 package com.jalcdeveloper.zowiapp.ui;
 
 import android.os.Bundle;
-import android.support.v4.content.res.TypedArrayUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -15,11 +13,8 @@ import com.jalcdeveloper.zowiapp.io.Zowi;
 import com.jalcdeveloper.zowiapp.io.ZowiHelper;
 import com.jalcdeveloper.zowiapp.io.ZowiProtocol;
 
-import java.security.PrivilegedAction;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Arrays;
-import java.util.Collections;
 
 // Sensores de movimiento
 import android.hardware.SensorManager;
