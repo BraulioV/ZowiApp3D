@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ZowiApp DIY</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
-    <string name="speechbtn_default">Speak</string>
-    <string name="speechbtn_listening">Listening...</string>
-    <string name="initial_prompt">Say something to Zowi</string>
+    <string name="speechbtn_default">Hablar</string>
+    <string name="speechbtn_listening">Escuchando...</string>
+    <string name="initial_prompt">Dile algo a Zowi</string>
 </resources>

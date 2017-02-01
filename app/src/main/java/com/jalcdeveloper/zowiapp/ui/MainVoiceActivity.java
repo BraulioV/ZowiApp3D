@@ -53,6 +53,7 @@ public class MainVoiceActivity extends VoiceActivity {
     private static final String LOGTAG = "TALKBACK";
     private static Integer ID_PROMPT_QUERY = 0;
     private static Integer ID_PROMPT_INFO = 1;
+    private String lang = "ES";
 
     private long startListeningTime = 0; // To skip errors (see processAsrError method)
 
@@ -83,7 +84,7 @@ public class MainVoiceActivity extends VoiceActivity {
             public void onClick(View v) {
                 //Ask the user to speak
                 try {
-                    speak(getResources().getString(R.string.initial_prompt), "EN", ID_PROMPT_QUERY);
+                    speak(getResources().getString(R.string.initial_prompt), lang, ID_PROMPT_QUERY);
                 } catch (Exception e) {
                     Log.e(LOGTAG, "TTS not accessible");
                 }
@@ -133,18 +134,21 @@ public class MainVoiceActivity extends VoiceActivity {
                 });
 
                 Log.e(LOGTAG,"ASR could not be started");
-                try { speak("Speech recognition could not be started", "EN", ID_PROMPT_INFO); } catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
+                try { speak("No se ha podido iniciar el reconocimiento del habla", lang,
+                        ID_PROMPT_INFO); } catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
 
             }
         } else {
 
             this.runOnUiThread(new Runnable() { //Toasts must be in the main thread
                 public void run() {
-                    Toast.makeText(getApplicationContext(),"Please check your Internet connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Please check your Internet connection",
+                            Toast.LENGTH_SHORT).show();
                     changeButtonAppearanceToDefault();
                 }
             });
-            try { speak("Please check your Internet connection", "EN", ID_PROMPT_INFO); } catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
+            try { speak("Comprueba tu conexión a internet", lang, ID_PROMPT_INFO); }
+            catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
             Log.e(LOGTAG, "Device not connected to Internet");
 
         }
@@ -249,7 +253,7 @@ public class MainVoiceActivity extends VoiceActivity {
             if(nBestList.size()>0){
                 String bestResult = nBestList.get(0); //We will use the best result
                 try {
-                    speak(bestResult, "EN", ID_PROMPT_INFO);
+                    speak(bestResult, lang, ID_PROMPT_INFO);
                 } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
 
                 changeButtonAppearanceToDefault();
