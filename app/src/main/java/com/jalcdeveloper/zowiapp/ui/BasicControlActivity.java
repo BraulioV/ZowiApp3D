@@ -1,6 +1,8 @@
 package com.jalcdeveloper.zowiapp.ui;
 
 import android.content.Intent;
+//import android.graphics.Matrix;
+import android.opengl.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -54,6 +56,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private double[] diff = new double[3];
     // Vector para almacenar la matriz de rotación
     private float[] matriz_de_rotacion = new float[16];
+    private float[] matriz_de_aceleracion = new float[4];
     // timestamp del último movimiento detectado
     private float timestamp;
     private float EPSILON = 2f;
@@ -167,76 +170,95 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // método para escuchar cambios en los valores de los sensores
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // detectamos de qué tipo es el sensor detectado
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            matriz_de_aceleracion[0] = event.values[0];
+            matriz_de_aceleracion[1] = event.values[1];
+            matriz_de_aceleracion[2] = event.values[2];
+            matriz_de_aceleracion[3] = 0;
+        }
 
-        // detectamos si se ha producido un giro
-        if (this.timestamp != 0) {
-            // Obtenemos la matriz de rotación
-            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
-            // Obtenemos la orientación
-            SensorManager.getOrientation(matriz_de_rotacion, orientacion);
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            // detectamos si se ha producido un giro
+            if (this.timestamp != 0) {
+                // Obtenemos la matriz de rotación
+                SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
+                float[] sensor_matrix = new float[4];
+                float[] result = new float[16];
+                Matrix.invertM(result,0,matriz_de_rotacion,0);
+                sensor_matrix[0] = 0;
+                sensor_matrix[1] = 0;
+                sensor_matrix[2] = 0;
+                sensor_matrix[3] = 0;
+                Matrix.multiplyMV(sensor_matrix,0,result,0,matriz_de_aceleracion,0);
 
-            diff[0] =  prev_orientacion[0] - orientacion[0];
-            diff[1] =  prev_orientacion[1] - orientacion[1];
-            diff[2] =  prev_orientacion[2] - orientacion[2];
+                // Obtenemos la orientación
+                SensorManager.getOrientation(result, orientacion);
 
-            // Si hacemos el gesto de avanzar hacia delante, el eje que más cambia
-            // es el de la Z (2)
-            // Si hacemos el gesto de moverse hacia los lados, el eje que más cambia
-            // es el de la Y (1)
+                /*diff[0] = prev_orientacion[0] - orientacion[0];
+                diff[1] = prev_orientacion[1] - orientacion[1];
+                diff[2] = prev_orientacion[2] - orientacion[2];
 
-            int ind = max(diff);
-            Log.d(TAG, "Valor de i " + diff[ind]);
-            if(Math.abs(diff[ind]) > 0.05) {
-                Log.d(TAG, "Ult acc = " + last_move);
-                switch (ind) {
-                    case 0:
-                        this.buttonWalkForward.setPressed(true);
-                        Log.d(TAG, "entro en el positivo de palante");
-//                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
-                        this.last_move = 0;
-                        break;
-                    case 1:
-                        Log.d(TAG, "gira hacia el lado");
-                        double angle = Math.toDegrees(orientacion[1]);
-                        Log.d(TAG, "Valor de angle = " + angle);
-                        if (angle >= 0) {
-                            this.buttonTurnLeft.setPressed(true);
-                            Log.d(TAG, "entro en el positivo de izq");
-//                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
-                            this.last_move = 2;
-                        } else {
-                            this.buttonTurnRight.setPressed(true);
-                            Log.d(TAG, "entro en el neg de izq");
-//                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
-                            this.last_move = 3;
-                        }
+                // Si hacemos el gesto de avanzar hacia delante, el eje que más cambia
+                // es el de la Z (2)
+                // Si hacemos el gesto de moverse hacia los lados, el eje que más cambia
+                // es el de la Y (1)
 
-                        // positivo --> izq
-                        // negativo --> dcha
-                        break;
-                    case 2:
-                        Log.d(TAG, "\n\n\n\nva recto");
-                        double ang = Math.toDegrees(orientacion[2]);
-                        Log.d(TAG, "Valor de angZ = " + ang);
-                        this.buttonWalkBackward.setPressed(true);
-                        Log.d(TAG, "entro en el positivo de palante");
-//                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
-                        this.last_move = 0;
+                int ind = max(diff);
+                Log.d(TAG, "Valor de i " + diff[ind]);
+                if (Math.abs(diff[ind]) > 0.08) {
+                    this.stopZowi();
+                    Log.d(TAG, "Ult acc = " + last_move);
+                    double angle = Math.toDegrees(orientacion[1]);
+                    switch (ind) {
+                        case 0:
+                            if (angle >= 0) {
+                                this.buttonWalkForward.setPressed(true);
+                                Log.d(TAG, "entro en el positivo de palante");
+                                //                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
+                                this.last_move = 0;
+                            }
+                            break;
+                        case 1:
+                            Log.d(TAG, "gira hacia el lado");
+                            Log.d(TAG, "Valor de angle = " + angle);
+                            if (angle >= 0) {
+                                this.buttonTurnLeft.setPressed(true);
+                                Log.d(TAG, "entro en el positivo de izq");
+                                //                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
+                                this.last_move = 2;
+                            } else {
+                                this.buttonTurnRight.setPressed(true);
+                                Log.d(TAG, "entro en el neg de izq");
+                                //                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
+                                this.last_move = 3;
+                            }
+
+                            // positivo --> izq
+                            // negativo --> dcha
+                            break;
+                        case 2:
+                            Log.d(TAG, "\n\n\n\nva recto");
+                            double ang = Math.toDegrees(orientacion[2]);
+                            Log.d(TAG, "Valor de angZ = " + ang);
+                            this.buttonWalkBackward.setPressed(true);
+                            Log.d(TAG, "entro en el positivo de palante");
+                            //                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
+                            this.last_move = 1;
 
 
-                        // positivo --> palante
-                        // negativo --> patras
-                        break;
+                            // positivo --> palante
+                            // negativo --> patras
+                            break;
+                    }*/
                 }
+                /*else{
+                    SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
+                    SensorManager.getOrientation(matriz_de_rotacion, prev_orientacion);
+                }*/
             }
 
             prev_orientacion = orientacion.clone();
-
-        }
-        else{
-            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
-            SensorManager.getOrientation(matriz_de_rotacion, prev_orientacion);
-        }
         this.timestamp = event.timestamp;
 
     }
