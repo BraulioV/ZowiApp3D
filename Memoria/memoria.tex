@@ -92,6 +92,55 @@
 \tableofcontents
 
 \section{\textcolor{denim}La app}
+Hemos hecho una app para controlar a \textit{\textcolor{denim}{Zowi}} mediante gestos y voz. Para ello, hemos partido de una aplicación simple que controlaba a Zowi con botones y que está disponible en \href{https://github.com/jalucenyo/ZowiApp3D}{github}.
 
+Tiene dos vistas principales: la vista para controlar a Zowi mediante gestos y botones (\hyperref[gestos]{Figura \thesection .\ref*{gestos}}) y la vista para controlar a \textit{\textcolor{denim}{Zowi}} mediante voz (\hyperref[voz]{Figura \thesection .\ref*{voz}}). La primera ha sido realizada para la práctica 3 y la última, para la práctica 4.
+
+\begin{figure}[!h]
+    \centering
+    \mbox{
+        \subfigure[Vista para controlar a Zowi mediante gestos y botones]{
+            \includegraphics[width=0.5\textwidth]{../screenshots/gestos}
+            \label{gestos}
+        }
+        \subfigure[Vista para controlar a Zowi mediante voz]{
+            \includegraphics[width=0.5\textwidth]{../screenshots/voz}
+            \label{voz}
+        }
+    }
+    \caption{Vistas de la app}
+    \label{vistas}
+\end{figure}
+
+La app permite hacer que Zowi se mueva y haga distintos pasos de ``baile'' como el \textit{\textcolor{denim}{moonwalk}}, el \textit{\textcolor{denim}{crusaito}} o el \textit{\textcolor{denim}{swing}}.
+
+\section{\textcolor{denim}Interfaz por gestos y botones}
+Esta interfaz tiene botones para que \textit{\textcolor{denim}{Zowi}} pueda tanto moverse como bailar, estos botones ya estaban en la app que utilizamos como base. Lo que hemos añadido nosotros han sido gestos para poder controlar la dirección en la que se mueve Zowi usando tanto el \textit{\textcolor{denim}{sensor de rotación}} como el \textit{\textcolor{denim}{acelerómetro}}.
+
+En la \hyperref[axis]{Figura \ref*{axis}} vemos el sistema de coordenadas relativo a un dispositivo que usa Android.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.2\textwidth]{axis_device}
+    \caption{Sistema de coordenadas (relativo a un dispositivo) usado por la Sensor API de Android}
+    \label{axis}
+\end{figure}
+
+\section{\textcolor{denim}Interfaz por voz}
+Esta interfaz tiene sólo dos botones: uno que la app empiece a escuchar al usuario y otro para volver a la interfaz anterior. Esta vista ha sido diseñada a partir de la aplicación de ejemplo facilitada por la profesora \href{https://github.com/zoraidacallejas}{Zoraida Callejas}.
+
+Cuando la app empieza a escuchar al usuario, se llama a la \texttt{\textcolor{denim}{SpeechRecognizer}} de Android. A partir de la frase que se haya reconocido, se busca alguno de los siguientes términos:
+
+\begin{enumerate}[\qquad\ \color{denim}{$\bullet$}]
+    \item Jackson
+    \item Moonwalk, aunque esta palabra no es reconocida correctamente por lo que no es recomendable usarla.
+    \item Swing
+    \item Crusaito
+    \item Saltar (o salto)
+    \item Parar
+    \item Ayuda (o podemos decirle a la app que estamos perdidos)
+\end{enumerate}
+
+Además, algunas de estas acciones requieren también que le indiquemos la dirección (izquierda o derecha). Si indicamos en la misma frase ambas direcciones, la app nos dará un error diciendo que Zowi sólo puede moverse en una dirección.
 
 \end{document}
