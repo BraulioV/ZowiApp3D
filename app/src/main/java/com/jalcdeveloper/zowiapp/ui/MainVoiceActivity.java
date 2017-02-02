@@ -46,6 +46,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.jalcdeveloper.zowiapp.ZowiApp;
+import com.jalcdeveloper.zowiapp.io.Zowi;
+import com.jalcdeveloper.zowiapp.io.ZowiHelper;
+import com.jalcdeveloper.zowiapp.io.ZowiProtocol;
+
 import com.jalcdeveloper.zowiapp.R;
 
 public class MainVoiceActivity extends VoiceActivity {
@@ -57,6 +62,8 @@ public class MainVoiceActivity extends VoiceActivity {
 
     private long startListeningTime = 0; // To skip errors (see processAsrError method)
 
+    private Zowi zowi;
+    private ZowiHelper zowiHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +79,10 @@ public class MainVoiceActivity extends VoiceActivity {
         setSpeakButton();
         // and the go back button
         setGoBackButton();
+
+        // create zowi :D
+        zowi = ((ZowiApp) getApplication()).zowi;
+        zowiHelper = new ZowiHelper(zowi);
     }
 
     /**
@@ -264,7 +275,35 @@ public class MainVoiceActivity extends VoiceActivity {
 
             if(nBestList.size()>0){
                 String bestResult = nBestList.get(0); //We will use the best result
+                /*
+                    Buscamos una de las posibles ordenes que podemos darle a Zowi en el bestResult:
+                        * Hacer el moonwalk hacia la izquierda
+                        * Hacer el moonwalk hacia la derecha
+                        * Dar un paso hacia delante
+                        * Dar un paso hacia atrás
+                        * Girarse hacia la izquierda
+                        * Girarse hacia la derecha
+                        * Hacer un swing
+                        * Hacer un crusaito
+                        * Saltar
+                */
+                if (bestResult.contains("para")) {
+                    zowiHelper.stop(zowi);
+                } else if (bestResult.contains("moonwalk") || bestResult.contains("Jackson")) {
+                    if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
+                        zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
+                    } else if (bestResult.contains("derecha") && !bestResult.contains("izquierda")) {
+                        zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
+                    } else {
+                        try {
+                            speak("Zowi sólo puede hacer el moonwalk en una dirección", lang, ID_PROMPT_INFO);
+                        } catch (Exception e) { Log.e(LOGTAG, "TTS not accesible"); }
+                    }
+                } else if (bestResult.contains("swing")) {
+                    zowiHelper.swing(zowi, Zowi.NORMAL_SPEED);
+                }
                 try {
+                    Log.e(LOGTAG, bestResult);
                     speak(bestResult, lang, ID_PROMPT_INFO);
                 } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
 
