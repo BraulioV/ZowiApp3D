@@ -274,22 +274,18 @@ public class MainVoiceActivity extends VoiceActivity {
             Log.d(LOGTAG, "ASR found " + nBestList.size() + " results");
 
             if(nBestList.size()>0){
-                String bestResult = nBestList.get(0); //We will use the best result
+                String bestResult = nBestList.get(0).toLowerCase(); //We will use the best result
                 /*
                     Buscamos una de las posibles ordenes que podemos darle a Zowi en el bestResult:
                         * Hacer el moonwalk hacia la izquierda
                         * Hacer el moonwalk hacia la derecha
-                        * Dar un paso hacia delante
-                        * Dar un paso hacia atrás
-                        * Girarse hacia la izquierda
-                        * Girarse hacia la derecha
                         * Hacer un swing
                         * Hacer un crusaito
                         * Saltar
                 */
                 if (bestResult.contains("para")) {
                     zowiHelper.stop(zowi);
-                } else if (bestResult.contains("moonwalk") || bestResult.contains("Jackson")) {
+                } else if (bestResult.contains("moonwalk") || bestResult.contains("jackson")) {
                     if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
                         zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                     } else if (bestResult.contains("derecha") && !bestResult.contains("izquierda")) {
@@ -301,12 +297,26 @@ public class MainVoiceActivity extends VoiceActivity {
                     }
                 } else if (bestResult.contains("swing")) {
                     zowiHelper.swing(zowi, Zowi.NORMAL_SPEED);
+                } else if (bestResult.contains("crusaito")) {
+                    if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
+                        zowiHelper.crusaito(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
+                    } else if (bestResult.contains("derecha") && !bestResult.contains("izquierda")) {
+                        zowiHelper.crusaito(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
+                    } else {
+                        try {
+                            speak("Zowi sólo puede hacer el crusaito en una dirección", lang, ID_PROMPT_INFO);
+                        } catch (Exception e) { Log.e(LOGTAG, "TTS not accesible"); }
+                    }
+                } else if (bestResult.contains("salt")) {
+                    zowiHelper.jump(zowi, Zowi.NORMAL_SPEED);
+                } else if (bestResult.contains("ayuda") || bestResult.contains("perdid")) {
+                    try {
+                        speak("Zowi puede hacer el Michael Jackson y el crusaito tanto a la izquierda " +
+                                "como a la derecha. También puede hacer el swing y saltar", lang,
+                                ID_PROMPT_INFO);
+                    } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
                 }
-                try {
-                    Log.e(LOGTAG, bestResult);
-                    speak(bestResult, lang, ID_PROMPT_INFO);
-                } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
-
+                Log.e(LOGTAG, bestResult);
                 changeButtonAppearanceToDefault();
             }
         }
