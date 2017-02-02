@@ -50,6 +50,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // sensores de movimiento
     private SensorManager mSensorManager;
     private Sensor mSensor;
+    private Sensor aSensor;
     // vector para guardar los valores devueltos por el sensor de rotación y los previos
     private float[] orientacion = new float[3];
     private float[] prev_orientacion = new float[3];
@@ -101,6 +102,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         // sensores de movimiento
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        aSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         this.timestamp = 0;
 
         zowi.setRequestListener(requestListener);
@@ -126,6 +128,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         }, 0, 5000);
         super.onResume();
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, aSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -172,6 +175,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     public void onSensorChanged(SensorEvent event) {
         // detectamos de qué tipo es el sensor detectado
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
             matriz_de_aceleracion[0] = event.values[0];
             matriz_de_aceleracion[1] = event.values[1];
             matriz_de_aceleracion[2] = event.values[2];
@@ -180,7 +184,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // detectamos si se ha producido un giro
-            if (this.timestamp != 0) {
+//            if (this.timestamp != 0) {
                 // Obtenemos la matriz de rotación
                 SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
                 float[] sensor_matrix = new float[4];
@@ -194,6 +198,10 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
                 // Obtenemos la orientación
                 SensorManager.getOrientation(result, orientacion);
+
+                Log.d("sensorMatrix[0]", Float.toString(sensor_matrix[0]));
+                Log.d("sensorMatrix[1]", Float.toString(sensor_matrix[1]));
+                Log.d("sensorMatrix[2]", Float.toString(sensor_matrix[2]));
 
                 /*diff[0] = prev_orientacion[0] - orientacion[0];
                 diff[1] = prev_orientacion[1] - orientacion[1];
@@ -256,7 +264,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
                     SensorManager.getOrientation(matriz_de_rotacion, prev_orientacion);
                 }*/
-            }
+//            }
 
             prev_orientacion = orientacion.clone();
         this.timestamp = event.timestamp;
