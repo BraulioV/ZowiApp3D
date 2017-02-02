@@ -186,11 +186,14 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
             int ind = max(diff);
             Log.d(TAG, "Valor de i " + diff[ind]);
-            if(Math.abs(diff[ind]) > 0) {
+            if(Math.abs(diff[ind]) > 0.05) {
                 Log.d(TAG, "Ult acc = " + last_move);
                 switch (ind) {
                     case 0:
-//                        Log.d(TAG, "no hace nada");
+                        this.buttonWalkForward.setPressed(true);
+                        Log.d(TAG, "entro en el positivo de palante");
+//                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
+                        this.last_move = 0;
                         break;
                     case 1:
                         Log.d(TAG, "gira hacia el lado");
@@ -203,7 +206,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                             this.last_move = 2;
                         } else {
                             this.buttonTurnRight.setPressed(true);
-//                            Log.d(TAG, "entro en el neg de izq");
+                            Log.d(TAG, "entro en el neg de izq");
 //                            zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                             this.last_move = 3;
                         }
@@ -212,21 +215,13 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                         // negativo --> dcha
                         break;
                     case 2:
-//                        Log.d(TAG, "va recto");
+                        Log.d(TAG, "\n\n\n\nva recto");
                         double ang = Math.toDegrees(orientacion[2]);
-                        Log.d(TAG, "Valor de ang = " + ang);
-                        if(ang >= 0){
-                            this.buttonWalkForward.setPressed(true);
-                            Log.d(TAG, "entro en el positivo de palante");
-//                            zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
-                            this.last_move = 0;
-                        }
-                        else{
-                            this.buttonWalkBackward.setPressed(true);
-                            Log.d(TAG, "entro en el negativo de palante");
-//                            zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
-                            this.last_move = 1;
-                        }
+                        Log.d(TAG, "Valor de angZ = " + ang);
+                        this.buttonWalkBackward.setPressed(true);
+                        Log.d(TAG, "entro en el positivo de palante");
+//                        zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
+                        this.last_move = 0;
 
 
                         // positivo --> palante
