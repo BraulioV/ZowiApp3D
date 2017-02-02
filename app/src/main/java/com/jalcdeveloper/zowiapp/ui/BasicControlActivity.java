@@ -49,11 +49,14 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private SensorManager mSensorManager;
     private Sensor mSensor;
     // vector para guardar los valores devueltos por el sensor de rotación y los previos
-    private float[] mRot;
-    private float[] prev_mRot;
+    private float[] orientacion = new float[3];
+    private float[] prev_orientacion = new float[3];
+    private double[] diff = new double[3];
+    // Vector para almacenar la matriz de rotación
+    private float[] matriz_de_rotacion = new float[16];
     // timestamp del último movimiento detectado
     private float timestamp;
-    private float EPSILON = 0.1f;
+    private float EPSILON = 2f;
     private int last_move = -1;
 
     private Zowi zowi;
@@ -130,12 +133,12 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     }
 
     // devuelve el máximo elemento entre los tres primeros elementos un array
-    private int max(float[] list){
+    private int max(double[] list){
         int ind = -1;
-        float max = -9999999;
+        double max = -9999999;
         for (int i = 0; i < 3; i++) {
             if(list[i] > max) {
-                max = list[i];
+                max = Math.abs(list[i]);
                 ind = i;
             }
         }
@@ -167,85 +170,51 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
         // detectamos si se ha producido un giro
         if (this.timestamp != 0) {
-            if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-                /*
-                   values es un vector de float donde:
-                   values[0]: x*sin(theta/2)
-                   values[1]: y*sin(theta/2)
-                   values[2]: z*sin(theta/2)
-                   values[3]: cos(theta/2)
-                   values[4]: estimated heading accuracy (in radians) or -1 if unavailable
-                */
-                this.mRot = event.values.clone();
-                // Log.d(TAG, "mRot = " + mRot[0] + " " + mRot[1] + " " + mRot[2]);
-                // Log.d(TAG, "prev_mRot = " + prev_mRot[0] + " " + prev_mRot[1] + " " + prev_mRot[2]);
-                float[] resta = new float[mRot.length];
-                for (int i=0; i<mRot.length; i++) {
-                    resta[i] = Math.abs(mRot[i] - prev_mRot[i]);
-                }
-                //Log.d(TAG, "resta = " + resta[0] + " " + resta[1] + " " + resta[2]);
-                int ind = this.max(resta);
-                //Log.d(TAG, "Maximo = " + ind);
-                if(resta[ind] > EPSILON) {
-                    if (last_move != -1) {
-                        stopZowi();
-                    }
-                    switch (ind) {
-                        case 0:
-                            Log.d(TAG, "Se mueve en el eje 0");
-                            if (mRot[0] >= 0) {
-                                Log.d(TAG, "Es positivo");
-                                last_move = 3;
-                            } else {
-                                Log.d(TAG, "Es negativo");
-                                last_move = 2;
-                            }
-                            break;
-                        case 1:
-                            Log.d(TAG, "Se mueve en el eje 1");
-                            if (mRot[1] >= 0) {
-                                Log.d(TAG, "Es positivo");
-                                last_move = 0;
-                            } else {
-                                Log.d(TAG, "Es negativo");
-                                last_move = 1;
-                            }
-                            break;
-                        case 2:
-                            Log.d(TAG, "Se mueve en el eje 2");
-                            if (mRot[2] >= 0) {
-                                Log.d(TAG, "Es positivo");
-                                last_move = -1;
-                            } else {
-                                Log.d(TAG, "Es negativo");
-                                last_move = -1;
-                            }
-                            break;
-                    }
-                } else {
-                    switch (last_move) {
-                        case 0:
-                            this.buttonWalkForward.setPressed(true);
-                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.FORWARD_DIR);
-                            break;
-                        case 1:
-                            this.buttonWalkBackward.setPressed(true);
-                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
-                            break;
-                        case 2:
-                            this.buttonTurnLeft.setPressed(true);
-                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.LEFT_DIR);
-                            break;
-                        case 3:
-                            this.buttonTurnRight.setPressed(true);
-                            //zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, zowi.RIGHT_DIR);
-                            break;
-                    }
+            // Obtenemos la matriz de rotación
+            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
+            // Obtenemos la orientación
+            SensorManager.getOrientation(matriz_de_rotacion, orientacion);
+
+            diff[0] =  prev_orientacion[0] - orientacion[0];
+            diff[1] =  prev_orientacion[1] - orientacion[1];
+            diff[2] =  prev_orientacion[2] - orientacion[2];
+
+            // Si hacemos el gesto de avanzar hacia delante, el eje que más cambia
+            // es el de la Z (2)
+            // Si hacemos el gesto de moverse hacia los lados, el eje que más cambia
+            // es el de la Y (1)
+
+            int ind = max(diff);
+            Log.d(TAG, "Valor de i " + diff[ind]);
+            if(Math.abs(diff[ind]) > 0.4) {
+                switch (ind) {
+                    case 0:
+                        Log.d(TAG, "no hace nada");
+                        break;
+                    case 1:
+                        Log.d(TAG, "gira hacia el lado");
+                        Log.d(TAG, "Valor de la orientacion = " + Math.toDegrees(orientacion[1]));
+                        // positivo --> izq
+                        // negativo --> dcha
+                        break;
+                    case 2:
+                        Log.d(TAG, "va recto");
+                        Log.d(TAG, "Valor de la orientacion = " + Math.toDegrees(orientacion[2]));
+                        // positivo --> palante
+                        // negativo --> patras
+                        break;
                 }
             }
+
+            prev_orientacion = orientacion.clone();
+
+        }
+        else{
+            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
+            SensorManager.getOrientation(matriz_de_rotacion, prev_orientacion);
         }
         this.timestamp = event.timestamp;
-        this.prev_mRot = event.values.clone();
+
     }
 
     @Override
