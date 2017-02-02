@@ -63,13 +63,15 @@ public class MainVoiceActivity extends VoiceActivity {
         super.onCreate(savedInstanceState);
 
         //Set layout
-        setContentView(R.layout.activity_basic_control);
+        setContentView(R.layout.activity_voice);
 
         //Initialize the speech recognizer and synthesizer
         initSpeechInputOutput(this);
 
         //Set up the speech button
         setSpeakButton();
+        // and the go back button
+        setGoBackButton();
     }
 
     /**
@@ -88,6 +90,16 @@ public class MainVoiceActivity extends VoiceActivity {
                 } catch (Exception e) {
                     Log.e(LOGTAG, "TTS not accessible");
                 }
+            }
+        });
+    }
+    private void setGoBackButton() {
+        // gain reference to speak button
+        Button speak = (Button) findViewById(R.id.go_back_button);
+        speak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

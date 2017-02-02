@@ -53,7 +53,7 @@ public class ConnectActivity extends ImmersiveActivity
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Title")
+                .setTitle("Dispositivos bluetooth")
                 .setCancelable(true)
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {

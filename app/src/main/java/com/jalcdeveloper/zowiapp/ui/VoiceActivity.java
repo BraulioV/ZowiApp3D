@@ -57,7 +57,7 @@ import java.util.Locale;
  * @see http://developer.android.com/reference/android/speech/tts/UtteranceProgressListener.html
  */
 
-public abstract class VoiceActivity extends Activity implements RecognitionListener, OnInitListener{
+public abstract class VoiceActivity extends ImmersiveActivity implements RecognitionListener, OnInitListener{
 
     private final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 22;
     private SpeechRecognizer myASR;

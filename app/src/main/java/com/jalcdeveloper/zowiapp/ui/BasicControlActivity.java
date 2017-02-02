@@ -79,7 +79,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         buttonCrusaitoLeft = (ImageButton) findViewById(R.id.button_crusaito_left);
         buttonCrusaitoRight = (ImageButton) findViewById(R.id.button_crusaito_right);
         textBattery = (TextView) findViewById(R.id.text_battery);
-        speak = (Button) findViewById(R.id.speech_btn);
+        speak = (Button) findViewById(R.id.speech_btn1);
 
         buttonWalkForward.setOnTouchListener(walkForwardOnTouchListener);
         buttonWalkBackward.setOnTouchListener(walkBackwardOnTouchListener);
