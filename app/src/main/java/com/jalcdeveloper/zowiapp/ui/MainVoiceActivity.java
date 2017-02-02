@@ -283,7 +283,7 @@ public class MainVoiceActivity extends VoiceActivity {
                         * Hacer un crusaito
                         * Saltar
                 */
-                if (bestResult.contains("para")) {
+                if (bestResult.contains("ara")) {
                     zowiHelper.stop(zowi);
                 } else if (bestResult.contains("moonwalk") || bestResult.contains("jackson")) {
                     if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
@@ -312,7 +312,8 @@ public class MainVoiceActivity extends VoiceActivity {
                 } else if (bestResult.contains("ayuda") || bestResult.contains("perdid")) {
                     try {
                         speak("Zowi puede hacer el Michael Jackson y el crusaito tanto a la izquierda " +
-                                "como a la derecha. También puede hacer el swing y saltar", lang,
+                                "como a la derecha. También puede hacer el swing y saltar. Cuando" +
+                                "quieras que Zowi se detenga, dile que pare.", lang,
                                 ID_PROMPT_INFO);
                     } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
                 }
