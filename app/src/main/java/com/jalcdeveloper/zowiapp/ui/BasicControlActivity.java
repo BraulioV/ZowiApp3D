@@ -208,93 +208,28 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // método para escuchar cambios en los valores de los sensores
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // guardamos la posición inicial del teléfono
-        if (event.timestamp == 0) {
-            Log.d(TAG, "Guardando la posición inicial del teléfono");
-            this.v_sensor_inicial = event.values.clone();
+        // It is good practice to check that we received the proper sensor event
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
+        {
+            // Convert the rotation-vector to a 4x4 matrix.
+            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion,
+                    event.values);
+            SensorManager
+                    .remapCoordinateSystem(matriz_de_rotacion,
+                            SensorManager.AXIS_X, SensorManager.AXIS_Z,
+                            matriz_de_rotacion);
+            SensorManager.getOrientation(matriz_de_rotacion, orientacion);
+
+            // Optionally convert the result from radians to degrees
+            orientacion[0] = (float) Math.toDegrees(orientacion[0]);
+            orientacion[1] = (float) Math.toDegrees(orientacion[1]);
+            orientacion[2] = (float) Math.toDegrees(orientacion[2]);
+
+            Log.d(TAG," Yaw: " + orientacion[0] + "\n Pitch: "
+                    + orientacion[1] + "\n Roll (not used): "
+                    + orientacion[2]);
+
         }
-
-        // detectamos de qué tipo es el sensor detectado
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
-            matriz_de_aceleracion[0] = event.values[0];
-            matriz_de_aceleracion[1] = event.values[1];
-            matriz_de_aceleracion[2] = event.values[2];
-            matriz_de_aceleracion[3] = 0;
-        }
-
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            // detectamos si se ha producido un giro
-            // Obtenemos la matriz de rotación
-            SensorManager.getRotationMatrixFromVector(matriz_de_rotacion, event.values);
-            float[] sensor_matrix = new float[4];
-            float[] result = new float[16];
-            Matrix.invertM(result, 0, matriz_de_rotacion, 0);
-            sensor_matrix[0] = 0;
-            sensor_matrix[1] = 0;
-            sensor_matrix[2] = 0;
-            sensor_matrix[3] = 0;
-            Matrix.multiplyMV(sensor_matrix, 0, result, 0, matriz_de_aceleracion, 0);
-
-            // Obtenemos la orientación
-            SensorManager.getOrientation(result, orientacion);
-
-            Log.d("sensorMatrix[0]", Float.toString(sensor_matrix[0]));
-            Log.d("sensorMatrix[1]", Float.toString(sensor_matrix[1]));
-            Log.d("sensorMatrix[2]", Float.toString(sensor_matrix[2]));
-
-            Log.d("orientation[0]", Float.toString(orientacion[0]));
-            Log.d("orientation[1]", Float.toString(orientacion[1]));
-            Log.d("orientation[2]", Float.toString(orientacion[2]));
-
-            /* La matriz de orientación nos da la dirección hacia la que se mueve el robot y la
-               matriz de sensor nos da el eje en el que se mueve. */
-            double mod = 0;
-            for (int i = 0; i < diff_matrix.length; i++) {
-                diff_matrix[i] = v_sensor_inicial[i] - sensor_matrix[i];
-                mod+=diff_matrix[i]*diff_matrix[i];
-            }
-
-            mod = Math.sqrt(mod);
-
-            Log.d("mod", Double.toString(mod));
-
-            int ind = min(diff_matrix);
-
-            Log.d("i = ", Integer.toString(ind));
-
-            if (mod > 1) {
-                switch (ind) {
-                    case 0:
-
-                        break;
-                    case 1:
-                        if(this.last_move == -1 || this.last_move == 4) {
-                            Log.d(TAG,"--------------------------------------------------------------------------------------------------------------");
-                            if (orientacion[ind] <= 0) {
-                                Log.d(TAG, "Valor de i " + diff_matrix[ind]);
-                                this.last_move = 1;
-                            } else {
-                                Log.d(TAG, "Valor de i " + diff_matrix[ind]);
-                                this.last_move = 0;
-                            }
-                        } else if (this.last_move != -1 || this.last_move != 4) {
-                            Log.d(TAG, "Valor de i " + diff_matrix[ind]);
-                            Log.d(TAG,"dñasfjokiasjofkdjasokfjdokasfjokadsfjokasjdofñjasdoñfjokasdfjkoñasdfjokñasdjfokñasdjofkñasdjkoñfjadksofjokasdñfjkoasdñfjokñasdfjkodñasfjkoñadsofkasjdofoas");
-                            this.last_move = -1;
-                        }
-
-                        break;
-                    case 2:
-
-
-                        break;
-                }
-
-            }
-            prev_matrix = sensor_matrix.clone();
-        }
-        performAction();
     }
 
     @Override
