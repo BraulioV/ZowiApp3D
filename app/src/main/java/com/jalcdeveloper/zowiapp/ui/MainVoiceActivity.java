@@ -58,7 +58,6 @@ public class MainVoiceActivity extends VoiceActivity {
     private static final String LOGTAG = "TALKBACK";
     private static Integer ID_PROMPT_QUERY = 0;
     private static Integer ID_PROMPT_INFO = 1;
-    private String lang = "ES";
 
     private long startListeningTime = 0; // To skip errors (see processAsrError method)
 
@@ -97,9 +96,9 @@ public class MainVoiceActivity extends VoiceActivity {
             public void onClick(View v) {
                 //Ask the user to speak
                 try {
-                    speak(getResources().getString(R.string.initial_prompt), lang, ID_PROMPT_QUERY);
+                    speak(getResources().getString(R.string.initial_prompt), ID_PROMPT_QUERY);
                 } catch (Exception e) {
-                    Log.e(LOGTAG, "TTS not accessible");
+                    Log.e(LOGTAG, "TTS no accessible");
                 }
             }
         });
@@ -120,14 +119,14 @@ public class MainVoiceActivity extends VoiceActivity {
      * See the checkASRPermission in the VoiceActivity class
      */
     public void showRecordPermissionExplanation(){
-        Toast.makeText(getApplicationContext(), "TalkBack must access the microphone in order to perform speech recognition", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Talback necesita acceder al micrófono para poder grabar audio", Toast.LENGTH_SHORT).show();
     }
 
     /**
      * If the user does not grant permission to record audio on the device, a message is shown and the app finishes
      */
     public void onRecordAudioPermissionDenied(){
-        Toast.makeText(getApplicationContext(), "Sorry, TalkBack cannot work without accessing the microphone", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Talkback no puede trabajar sin acceder al micrófono", Toast.LENGTH_SHORT).show();
         System.exit(0);
     }
 
@@ -147,32 +146,32 @@ public class MainVoiceActivity extends VoiceActivity {
 					* Number of results = 1 (we will use the best result to perform the search)
 					*/
                 startListeningTime = System.currentTimeMillis();
-                listen(Locale.ENGLISH, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM, 1); //Start listening
+                listen(Locale.getDefault(), RecognizerIntent.LANGUAGE_MODEL_FREE_FORM, 1); //Start listening
             } catch (Exception e) {
                 this.runOnUiThread(new Runnable() {  //Toasts must be in the main thread
                     public void run() {
-                        Toast.makeText(getApplicationContext(),"ASR could not be started", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"ASR no se pudo iniciar", Toast.LENGTH_SHORT).show();
                         changeButtonAppearanceToDefault();
                     }
                 });
 
-                Log.e(LOGTAG,"ASR could not be started");
-                try { speak("No se ha podido iniciar el reconocimiento del habla", lang,
-                        ID_PROMPT_INFO); } catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
+                Log.e(LOGTAG,"ASR no se pudo iniciar");
+                try { speak("No se ha podido iniciar el reconocimiento del habla",
+                        ID_PROMPT_INFO); } catch (Exception ex) { Log.e(LOGTAG, "TTS no accessible"); }
 
             }
         } else {
 
             this.runOnUiThread(new Runnable() { //Toasts must be in the main thread
                 public void run() {
-                    Toast.makeText(getApplicationContext(),"Please check your Internet connection",
+                    Toast.makeText(getApplicationContext(),"Comprueba tu conexión a internet",
                             Toast.LENGTH_SHORT).show();
                     changeButtonAppearanceToDefault();
                 }
             });
-            try { speak("Comprueba tu conexión a internet", lang, ID_PROMPT_INFO); }
-            catch (Exception ex) { Log.e(LOGTAG, "TTS not accessible"); }
-            Log.e(LOGTAG, "Device not connected to Internet");
+            try { speak("Comprueba tu conexión a internet", ID_PROMPT_INFO); }
+            catch (Exception ex) { Log.e(LOGTAG, "TTS no accessible"); }
+            Log.e(LOGTAG, "Dispositivo no conectado a internet");
 
         }
     }
@@ -219,42 +218,42 @@ public class MainVoiceActivity extends VoiceActivity {
         // http://stackoverflow.com/questions/31071650/speechrecognizer-throws-onerror-on-the-first-listening
         long duration = System.currentTimeMillis() - startListeningTime;
         if (duration < 500 && errorCode == SpeechRecognizer.ERROR_NO_MATCH) {
-            Log.e(LOGTAG, "Doesn't seem like the system tried to listen at all. duration = " + duration + "ms. Going to ignore the error");
+            Log.e(LOGTAG, "El sistema no parece haber escuchado. Duración = " + duration + "ms. Ignorando el error");
             stopListening();
         }
         else {
             String errorMsg = "";
             switch (errorCode) {
                 case SpeechRecognizer.ERROR_AUDIO:
-                    errorMsg = "Audio recording error";
+                    errorMsg = "Error al grabar el audio";
                 case SpeechRecognizer.ERROR_CLIENT:
-                    errorMsg = "Unknown client side error";
+                    errorMsg = "Error desconocido en el cliente";
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                    errorMsg = "Insufficient permissions";
+                    errorMsg = "Permisos insuficientes";
                 case SpeechRecognizer.ERROR_NETWORK:
-                    errorMsg = "Network related error";
+                    errorMsg = "Error en la red";
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                    errorMsg = "Network operation timed out";
+                    errorMsg = "Agotado el tiempo de espera";
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    errorMsg = "No recognition result matched";
+                    errorMsg = "No se ha encontrado ningún resultado";
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                    errorMsg = "RecognitionService busy";
+                    errorMsg = "RecognitionService ocupado";
                 case SpeechRecognizer.ERROR_SERVER:
-                    errorMsg = "Server sends error status";
+                    errorMsg = "Error en el servidor";
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    errorMsg = "No speech input";
+                    errorMsg = "No hay audio de entrada";
                 default:
                     errorMsg = ""; //Another frequent error that is not really due to the ASR, we will ignore it
             }
             if (errorMsg != "") {
                 this.runOnUiThread(new Runnable() { //Toasts must be in the main thread
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "Speech recognition error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Error en el reconocimeinto del habla", Toast.LENGTH_LONG).show();
                     }
                 });
 
-                Log.e(LOGTAG, "Error when attempting to listen: " + errorMsg);
-                try { speak(errorMsg,"EN", ID_PROMPT_INFO); } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
+                Log.e(LOGTAG, "Error al intentar escuchar: " + errorMsg);
+                try { speak(errorMsg, ID_PROMPT_INFO); } catch (Exception e) { Log.e(LOGTAG, "TTS no accessible"); }
             }
         }
 
@@ -271,7 +270,7 @@ public class MainVoiceActivity extends VoiceActivity {
 
         if(nBestList!=null){
 
-            Log.d(LOGTAG, "ASR found " + nBestList.size() + " results");
+            Log.d(LOGTAG, "ASR encontrados " + nBestList.size() + " resultados");
 
             if(nBestList.size()>0){
                 String bestResult = nBestList.get(0).toLowerCase(); //We will use the best result
@@ -283,17 +282,17 @@ public class MainVoiceActivity extends VoiceActivity {
                         * Hacer un crusaito
                         * Saltar
                 */
-                if (bestResult.contains("ara")) {
+                if (bestResult.contains("para") || bestResult.contains("stop")) {
                     zowiHelper.stop(zowi);
-                } else if (bestResult.contains("moonwalk") || bestResult.contains("jackson")) {
+                } else if (bestResult.contains("moon") || bestResult.contains("jackson")) {
                     if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
                         zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                     } else if (bestResult.contains("derecha") && !bestResult.contains("izquierda")) {
                         zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                     } else {
                         try {
-                            speak("Zowi sólo puede hacer el moonwalk en una dirección", lang, ID_PROMPT_INFO);
-                        } catch (Exception e) { Log.e(LOGTAG, "TTS not accesible"); }
+                            speak("Zowi sólo puede hacer el moonwalk en una dirección", ID_PROMPT_INFO);
+                        } catch (Exception e) { Log.e(LOGTAG, "TTS no accesible"); }
                     }
                 } else if (bestResult.contains("swing")) {
                     zowiHelper.swing(zowi, Zowi.NORMAL_SPEED);
@@ -304,18 +303,17 @@ public class MainVoiceActivity extends VoiceActivity {
                         zowiHelper.crusaito(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                     } else {
                         try {
-                            speak("Zowi sólo puede hacer el crusaito en una dirección", lang, ID_PROMPT_INFO);
-                        } catch (Exception e) { Log.e(LOGTAG, "TTS not accesible"); }
+                            speak("Zowi sólo puede hacer el crusaito en una dirección", ID_PROMPT_INFO);
+                        } catch (Exception e) { Log.e(LOGTAG, "TTS no accesible"); }
                     }
                 } else if (bestResult.contains("salt")) {
                     zowiHelper.jump(zowi, Zowi.NORMAL_SPEED);
                 } else if (bestResult.contains("ayuda") || bestResult.contains("perdid")) {
                     try {
-                        speak("Zowi puede hacer el Michael Jackson y el crusaito tanto a la izquierda " +
-                                "como a la derecha. También puede hacer el swing y saltar. Cuando" +
-                                "quieras que Zowi se detenga, dile que pare.", lang,
-                                ID_PROMPT_INFO);
-                    } catch (Exception e) { Log.e(LOGTAG, "TTS not accessible"); }
+                        speak("Zowi puede hacer el moonwalk y el crusaito a la izquierda y a la derecha " +
+                                "También puede saltar y hacer el swing. Cuando quieras que pare," +
+                                "sólo tienes que decírselo.", ID_PROMPT_INFO);
+                    } catch (Exception e) { Log.e(LOGTAG, "TTS no accessible"); }
                 }
                 Log.e(LOGTAG, bestResult);
                 changeButtonAppearanceToDefault();
@@ -385,6 +383,6 @@ public class MainVoiceActivity extends VoiceActivity {
      */
     @Override
     public void onTTSStart(String uttId) {
-        Log.e(LOGTAG, "TTS starts speaking");
+        Log.e(LOGTAG, "TTS empieza a hablar");
     }
 }
