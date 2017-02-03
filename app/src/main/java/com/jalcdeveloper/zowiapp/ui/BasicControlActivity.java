@@ -1,9 +1,6 @@
 package com.jalcdeveloper.zowiapp.ui;
 
 import android.content.Intent;
-//import android.graphics.Matrix;
-import android.nfc.Tag;
-import android.opengl.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -55,16 +52,12 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     // vector para guardar los valores devueltos por el sensor de rotación y los previos
 
     private float[] orientacion = new float[3];
-    private float[] prev_matrix = new float[4];
-    private float[] diff_matrix = new float[4];
 
     // Vector para almacenar la matriz de rotación
     private float[] matriz_de_rotacion = new float[16];
-    private float[] v_sensor_inicial = new float[5];
-    private float[] matriz_de_aceleracion = new float[4];
     // timestamp del último movimiento detectado
     private int last_move = -1;
-    private float SENSIBILIDAD = 0.35f;
+    private int last_last_move = -1;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -109,11 +102,6 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
-
-        diff_matrix[0] = 0;
-        diff_matrix[1] = 0;
-        diff_matrix[2] = 0;
-        diff_matrix[3] = 0;
 
         speak.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -191,17 +179,21 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
                 break;
             case 2:
-
+                this.buttonTurnLeft.setPressed(true);
+                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                 break;
             case 3:
-
+                this.buttonTurnRight.setPressed(true);
+                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                 break;
             case 4:
                 break;
             default:
                 last_move=4;
-                stopZowi();
-                zowiHelper.stop(zowi);
+                if(last_last_move != -1 && last_last_move != 4){
+                    stopZowi();
+                    zowiHelper.stop(zowi);
+                }
         }
     }
 
@@ -214,10 +206,10 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
             // Convert the rotation-vector to a 4x4 matrix.
             SensorManager.getRotationMatrixFromVector(matriz_de_rotacion,
                     event.values);
-            SensorManager
+            /*SensorManager
                     .remapCoordinateSystem(matriz_de_rotacion,
-                            SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                            matriz_de_rotacion);
+                            SensorManager.AXIS_Y, SensorManager.AXIS_X,
+                            matriz_de_rotacion);*/
             SensorManager.getOrientation(matriz_de_rotacion, orientacion);
 
             // Optionally convert the result from radians to degrees
@@ -228,7 +220,37 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
             Log.d(TAG," Yaw: " + orientacion[0] + "\n Pitch: "
                     + orientacion[1] + "\n Roll (not used): "
                     + orientacion[2]);
+            // caminar hacia delante o hacia detrás
+            if ((orientacion[2] >= 15 && orientacion[2] <= 40) && (orientacion[1] >= -7 && orientacion[1] <= 7)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=0;
+            }
 
+            else if ((orientacion[2] >= -40 && orientacion[2] <= -18) && (orientacion[1] >= -7 && orientacion[1] <= 7)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=1;
+            }
+            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= 18 && orientacion[1] <= 30)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=2;
+            }
+            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= -30 && orientacion[1] <= -18)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=3;
+            }
+            else {
+                this.last_last_move = last_move;
+                last_move=-1;
+                } // detenerse
+            performAction();
         }
     }
 
