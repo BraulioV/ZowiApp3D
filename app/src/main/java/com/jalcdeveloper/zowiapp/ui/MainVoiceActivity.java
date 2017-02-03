@@ -282,9 +282,11 @@ public class MainVoiceActivity extends VoiceActivity {
                         * Hacer un crusaito
                         * Saltar
                 */
-                if (bestResult.contains("para") || bestResult.contains("stop")) {
+                if (bestResult.contains("para")) {
+                    Log.e(LOGTAG, "He reconocido la orden de parar");
                     zowiHelper.stop(zowi);
                 } else if (bestResult.contains("moon") || bestResult.contains("jackson")) {
+                    Log.e(LOGTAG, "He reconocido la orden de jackson");
                     if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
                         zowiHelper.moonWalker(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                     } else if (bestResult.contains("derecha") && !bestResult.contains("izquierda")) {
@@ -295,6 +297,7 @@ public class MainVoiceActivity extends VoiceActivity {
                         } catch (Exception e) { Log.e(LOGTAG, "TTS no accesible"); }
                     }
                 } else if (bestResult.contains("swing")) {
+                    Log.e(LOGTAG, "He reconocido la orden de swing");
                     zowiHelper.swing(zowi, Zowi.NORMAL_SPEED);
                 } else if (bestResult.contains("crusaito")) {
                     if (bestResult.contains("izquierda") && !bestResult.contains("derecha")) {
@@ -307,8 +310,10 @@ public class MainVoiceActivity extends VoiceActivity {
                         } catch (Exception e) { Log.e(LOGTAG, "TTS no accesible"); }
                     }
                 } else if (bestResult.contains("salt")) {
+                    Log.e(LOGTAG, "He reconocido la orden de saltar");
                     zowiHelper.jump(zowi, Zowi.NORMAL_SPEED);
                 } else if (bestResult.contains("ayuda") || bestResult.contains("perdid")) {
+                    Log.e(LOGTAG, "He reconocido la orden de ayuda");
                     try {
                         speak("Zowi puede hacer el moonwalk y el crusaito a la izquierda y a la derecha " +
                                 "También puede saltar y hacer el swing. Cuando quieras que pare," +
