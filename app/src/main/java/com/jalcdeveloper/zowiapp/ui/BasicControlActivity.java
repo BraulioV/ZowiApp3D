@@ -57,6 +57,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private float[] matriz_de_rotacion = new float[16];
     // timestamp del último movimiento detectado
     private int last_move = -1;
+    private int last_last_move = -1;
 
     private Zowi zowi;
     private ZowiHelper zowiHelper;
@@ -175,22 +176,24 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 break;
             case 1:
                 this.buttonWalkBackward.setPressed(true);
-//                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
+                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.BACKWARD_DIR);
                 break;
             case 2:
                 this.buttonTurnLeft.setPressed(true);
-//                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
+                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                 break;
             case 3:
                 this.buttonTurnRight.setPressed(true);
-//                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
+                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                 break;
             case 4:
                 break;
             default:
                 last_move=4;
-                stopZowi();
-                zowiHelper.stop(zowi);
+                if(last_last_move != -1 && last_last_move != 4){
+                    stopZowi();
+                    zowiHelper.stop(zowi);
+                }
         }
     }
 
@@ -218,15 +221,35 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     + orientacion[1] + "\n Roll (not used): "
                     + orientacion[2]);
             // caminar hacia delante o hacia detrás
-            if ((orientacion[2] >= 20 && orientacion[2] <= 30) && (orientacion[1] >= -5 && orientacion[1] <= 5)
-                    && (orientacion[0] >= -125 && orientacion[0] <= -90)){
+            if ((orientacion[2] >= 15 && orientacion[2] <= 40) && (orientacion[1] >= -7 && orientacion[1] <= 7)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
                 //camina hacia delante
+                this.last_last_move = last_move;
                 this.last_move=0;
-            } else if (Math.abs(orientacion[1]) > 30 && Math.abs(orientacion[2]) < 2) {
-                // girar hacia izquierda o hacia derecha
-                if (orientacion[1] > 0) {last_move=2;} // girar a izquierda
-                else {last_move=3;} // girar a derecha
-            } else {last_move=-1;} // detenerse
+            }
+
+            else if ((orientacion[2] >= -40 && orientacion[2] <= -18) && (orientacion[1] >= -7 && orientacion[1] <= 7)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=1;
+            }
+            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= 18 && orientacion[1] <= 30)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=2;
+            }
+            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= -30 && orientacion[1] <= -18)
+                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+                //camina hacia delante
+                this.last_last_move = last_move;
+                this.last_move=3;
+            }
+            else {
+                this.last_last_move = last_move;
+                last_move=-1;
+                } // detenerse
             performAction();
         }
     }
