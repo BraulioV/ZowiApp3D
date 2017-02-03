@@ -1,4 +1,4 @@
-%Compilar: pdflatex -synctex=1 -interaction=nonstopmode --shell-escape apuntesed.tex 
+%Compilar: pdflatex -synctex=1 -interaction=nonstopmode --shell-escape apuntesed.tex
 \documentclass[10pt,a4paper,spanish]{article}
 
 \usepackage[spanish]{babel}
@@ -92,7 +92,7 @@
 \tableofcontents
 
 \section{\textcolor{denim}La app}
-Hemos hecho una app para controlar a \textit{\textcolor{denim}{Zowi}} mediante gestos y voz. Para ello, hemos partido de una aplicación simple que controlaba a Zowi con botones y que está disponible en \href{https://github.com/jalucenyo/ZowiApp3D}{github}.
+Hemos hecho una app para controlar a \textit{\textcolor{denim}{Zowi}} mediante gestos y voz. Para ello, hemos partido de una aplicación simple que controlaba a Zowi con botones y que está disponible en \href{https://github.com/jalucenyo/ZowiApp3D}{GitHub}. El desarrollo de ambas prácticas podemos encontrarlo en el \textit{fork} que realizamos en \href{https://github.com/mgmacias95/ZowiApp3D}{GitHub}.
 
 Tiene dos vistas principales: la vista para controlar a Zowi mediante gestos y botones (\hyperref[gestos]{Figura \thesection .\ref*{gestos}}) y la vista para controlar a \textit{\textcolor{denim}{Zowi}} mediante voz (\hyperref[voz]{Figura \thesection .\ref*{voz}}). La primera ha sido realizada para la práctica 3 y la última, para la práctica 4.
 
@@ -126,19 +126,30 @@ En la \hyperref[axis]{Figura \ref*{axis}} vemos el sistema de coordenadas relati
     \label{axis}
 \end{figure}
 
+Los gestos para controlar el movimiento de Zowi, los detectamos obteniendo la rotación que ha realizado el teléfono haciendo uso de la matriz de rotación. Con esta matriz de rotación reajustamos los ejes de coordenadas para obtener la orientación del teléfono estando este en horizontal. Una vez calculados los valores de la orientación, según la inclinación del teléfono hará los siguientes gestos:
+
+\begin{enumerate}[\qquad\ \color{denim}{$\bullet$}]
+  \item Inclinar el teléfono hacia delante: este gesto hace andar a Zowi hacia delante.
+  \item Inclinar el teléfono hacia atrás: igual que antes, pero hacia atrás.
+  \item Inclinar el teléfono hacia la izquierda: Zowi girará a la izquierda.
+  \item Inclinar el teléfono hacia la derecha: igual que antes, pero hacia la derecha.
+\end{enumerate}
+
+Además de esto, como \textit{feedback} al usuario, los botones se iluminarán según la acción de la misma manera que se iluminarían pulsando los botones.
+
 \section{\textcolor{denim}Interfaz por voz}
 Esta interfaz tiene sólo dos botones: uno que la app empiece a escuchar al usuario y otro para volver a la interfaz anterior. Esta vista ha sido diseñada a partir de la aplicación de ejemplo facilitada por la profesora \href{https://github.com/zoraidacallejas}{Zoraida Callejas}.
 
 Cuando la app empieza a escuchar al usuario, se llama a la \texttt{\textcolor{denim}{SpeechRecognizer}} de Android. A partir de la frase que se haya reconocido, se busca alguno de los siguientes términos:
 
 \begin{enumerate}[\qquad\ \color{denim}{$\bullet$}]
-    \item Jackson
+    \item Jackson.
     \item Moonwalk, aunque esta palabra no es reconocida correctamente por lo que no es recomendable usarla.
-    \item Swing
-    \item Crusaito
-    \item Saltar (o salto)
-    \item Parar
-    \item Ayuda
+    \item Swing.
+    \item Crusaito.
+    \item Saltar (o salto).
+    \item Parar.
+    \item Ayuda.
 \end{enumerate}
 
 Además, algunas de estas acciones requieren también que le indiquemos la dirección (izquierda o derecha). Si indicamos en la misma frase ambas direcciones, la app nos dará un error diciendo que Zowi sólo puede moverse en una dirección. Podemos decírle a Zowi la acción mediante una frase, ya que sólo va a buscar la palabra clave que es la orden.
