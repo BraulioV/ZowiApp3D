@@ -65,7 +65,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
     // Controlamos si estamos en la actividad de voz o no
     // para activar o desactivar la detección del movimiento
-
+    boolean voice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +107,12 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         zowi.setRequestListener(requestListener);
         zowi.programIdRequest();
 
+        voice = false;
+
         speak.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent speak_ac = new Intent(getApplicationContext(), MainVoiceActivity.class);
+                voice = true;
                 startActivity(speak_ac);
             }
         });
@@ -128,6 +131,8 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
         super.onResume();
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, aSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(TAG,"ON RESUME");
+        voice = false;
     }
 
     @Override
@@ -181,7 +186,7 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     public void onSensorChanged(SensorEvent event) {
 
         // Comprobamosque el sensor es el correcto
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && !voice) {
             // Obtenemos la matriz de rotación, y reestablecemos las coordenadas
             // del sensor
             SensorManager.getRotationMatrixFromVector(matriz_de_rotacion,
