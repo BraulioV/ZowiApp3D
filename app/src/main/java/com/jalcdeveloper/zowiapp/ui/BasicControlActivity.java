@@ -63,6 +63,10 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
     private ZowiHelper zowiHelper;
     private Timer batteryTimer;
 
+    // Controlamos si estamos en la actividad de voz o no
+    // para activar o desactivar la detección del movimiento
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,19 +137,6 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
     }
 
-    // devuelve el máximo elemento entre los tres primeros elementos un array
-    private int min(float[] list){
-        int ind = -1;
-        double min = 9999999;
-        for (int i = 0; i < 3; i++) {
-            if(list[i] < min) {
-                min = Math.abs(list[i]);
-                ind = i;
-            }
-        }
-        return ind;
-    }
-
     // despresiona y para a zowi cuando se detecta un movimiento brusco
     private void stopZowi() {
         this.buttonWalkForward.setPressed(false);
@@ -181,60 +172,60 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                     zowiHelper.stop(zowi);
                 }
         }
+        if(last_last_move != last_move)
+            stopZowi();
     }
 
     // método para escuchar cambios en los valores de los sensores
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // It is good practice to check that we received the proper sensor event
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
-        {
-            // Convert the rotation-vector to a 4x4 matrix.
+
+        // Comprobamosque el sensor es el correcto
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            // Obtenemos la matriz de rotación, y reestablecemos las coordenadas
+            // del sensor
             SensorManager.getRotationMatrixFromVector(matriz_de_rotacion,
                     event.values);
             SensorManager
                     .remapCoordinateSystem(matriz_de_rotacion,
                             SensorManager.AXIS_Y, SensorManager.AXIS_X,
                             matriz_de_rotacion);
+            // obtenemos la orientación del vector
             SensorManager.getOrientation(matriz_de_rotacion, orientacion);
 
-            // Optionally convert the result from radians to degrees
-            orientacion[0] = (float) (Math.toDegrees(orientacion[0])+360)%360;
-            orientacion[1] = (float) (Math.toDegrees(orientacion[1])+360)%360;
-            orientacion[2] = (float) (Math.toDegrees(orientacion[2])+360)%360;
+            // Pasamos de radianes a grados y los ponemos de 0 a 360, para evitar
+            // problemas de signo con los grados
+            orientacion[0] = (float) (Math.toDegrees(orientacion[0]) + 360) % 360;
+            orientacion[1] = (float) (Math.toDegrees(orientacion[1]) + 360) % 360;
+            orientacion[2] = (float) (Math.toDegrees(orientacion[2]) + 360) % 360;
 
-            Log.d(TAG," Yaw: " + orientacion[0] + " Pitch: " + orientacion[1] + " Roll (not used): " + orientacion[2]);
             // caminar hacia delante o hacia detrás
-            if ((orientacion[2] >= 160 && orientacion[2] <= 180) && (orientacion[1] >= 5 && orientacion[1] <= 60)){
+            if ((orientacion[2] >= 100 && orientacion[2] <= 180) && (orientacion[1] >= 5 && orientacion[1] <= 60)) {
                 //camina hacia delante
                 this.last_last_move = last_move;
-                this.last_move=0;
-            }
-
-            else if ((orientacion[2] >= 160 && orientacion[2] <= 180) && (orientacion[1] >= 300 && orientacion[1] <= 350)){
+                this.last_move = 0;
+            } else if ((orientacion[2] >= 100 && orientacion[2] <= 180) && (orientacion[1] >= 300 && orientacion[1] <= 350)) {
                 //camina hacia atrás
                 this.last_last_move = last_move;
-                this.last_move=1;
-            }
-            else if ((orientacion[2] >=185 && orientacion[2] <= 250)){
-                Log.d(TAG,"--------------------------------------------------------------------");
+                this.last_move = 1;
+            } else if ((orientacion[2] >= 185 && orientacion[2] <= 300) &&
+                    ((orientacion[1] > 355 && orientacion[1] < 360) || (orientacion[1] > 0 && orientacion[1] < 5))) {
+                // rota a la derecha
                 this.last_last_move = last_move;
-                this.last_move=3;
-            }
-            else if ((orientacion[2] >= 100 && orientacion[2] <= 170) &&
-                    ((orientacion[1]>355&&orientacion[1]<360) || (orientacion[1] > 0 && orientacion[1] < 5)) ){
-                //camina hacia delante
-                Log.d(TAG,"jdkflñasjkfñjsaklfjaksdlñfjklsañjfklñasdjfklñsjadkjasjfkafjd");
+                this.last_move = 3;
+            } else if ((orientacion[2] >= 100 && orientacion[2] <= 170) &&
+                        ((orientacion[1] > 355 && orientacion[1] < 360) || (orientacion[1] > 0 && orientacion[1] < 5))) {
+                    // rota a la izquierda
+                    this.last_last_move = last_move;
+                    this.last_move = 2;
+            } else {
                 this.last_last_move = last_move;
-                this.last_move=2;
-            }
-            else {
-                this.last_last_move = last_move;
-                last_move=-1;
-                } // detenerse
+                last_move = -1;
+            } // detenerse
             performAction();
         }
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
