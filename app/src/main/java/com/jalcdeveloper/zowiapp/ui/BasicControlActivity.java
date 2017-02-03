@@ -148,20 +148,6 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
 
     // despresiona y para a zowi cuando se detecta un movimiento brusco
     private void stopZowi() {
-//        switch (last_move) {
-//            case 0:
-//                this.buttonWalkForward.setPressed(false);
-//                break;
-//            case 1:
-//                this.buttonWalkBackward.setPressed(false);
-//                break;
-//            case 2:
-//                this.buttonTurnLeft.setPressed(false);
-//                break;
-//            case 3:
-//                this.buttonTurnRight.setPressed(false);
-//                break;
-//        }
         this.buttonWalkForward.setPressed(false);
         this.buttonWalkBackward.setPressed(false);
         this.buttonTurnLeft.setPressed(false);
@@ -180,11 +166,11 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
                 break;
             case 2:
                 this.buttonTurnLeft.setPressed(true);
-                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
+                zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.LEFT_DIR);
                 break;
             case 3:
                 this.buttonTurnRight.setPressed(true);
-                zowiHelper.walk(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
+                zowiHelper.turn(zowi, Zowi.NORMAL_SPEED, Zowi.RIGHT_DIR);
                 break;
             case 4:
                 break;
@@ -206,45 +192,41 @@ public class BasicControlActivity extends ImmersiveActivity implements SensorEve
             // Convert the rotation-vector to a 4x4 matrix.
             SensorManager.getRotationMatrixFromVector(matriz_de_rotacion,
                     event.values);
-            /*SensorManager
+            SensorManager
                     .remapCoordinateSystem(matriz_de_rotacion,
                             SensorManager.AXIS_Y, SensorManager.AXIS_X,
-                            matriz_de_rotacion);*/
+                            matriz_de_rotacion);
             SensorManager.getOrientation(matriz_de_rotacion, orientacion);
 
             // Optionally convert the result from radians to degrees
-            orientacion[0] = (float) Math.toDegrees(orientacion[0]);
-            orientacion[1] = (float) Math.toDegrees(orientacion[1]);
-            orientacion[2] = (float) Math.toDegrees(orientacion[2]);
+            orientacion[0] = (float) (Math.toDegrees(orientacion[0])+360)%360;
+            orientacion[1] = (float) (Math.toDegrees(orientacion[1])+360)%360;
+            orientacion[2] = (float) (Math.toDegrees(orientacion[2])+360)%360;
 
-            Log.d(TAG," Yaw: " + orientacion[0] + "\n Pitch: "
-                    + orientacion[1] + "\n Roll (not used): "
-                    + orientacion[2]);
+            Log.d(TAG," Yaw: " + orientacion[0] + " Pitch: " + orientacion[1] + " Roll (not used): " + orientacion[2]);
             // caminar hacia delante o hacia detrás
-            if ((orientacion[2] >= 15 && orientacion[2] <= 40) && (orientacion[1] >= -7 && orientacion[1] <= 7)
-                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
+            if ((orientacion[2] >= 160 && orientacion[2] <= 180) && (orientacion[1] >= 5 && orientacion[1] <= 60)){
                 //camina hacia delante
                 this.last_last_move = last_move;
                 this.last_move=0;
             }
 
-            else if ((orientacion[2] >= -40 && orientacion[2] <= -18) && (orientacion[1] >= -7 && orientacion[1] <= 7)
-                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
-                //camina hacia delante
+            else if ((orientacion[2] >= 160 && orientacion[2] <= 180) && (orientacion[1] >= 300 && orientacion[1] <= 350)){
+                //camina hacia atrás
                 this.last_last_move = last_move;
                 this.last_move=1;
             }
-            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= 18 && orientacion[1] <= 30)
-                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
-                //camina hacia delante
-                this.last_last_move = last_move;
-                this.last_move=2;
-            }
-            else if ((orientacion[2] >= -7 && orientacion[2] <= 5) && (orientacion[1] >= -30 && orientacion[1] <= -18)
-                    && (orientacion[0] >= -130 && orientacion[0] <= -70)){
-                //camina hacia delante
+            else if ((orientacion[2] >=185 && orientacion[2] <= 250)){
+                Log.d(TAG,"--------------------------------------------------------------------");
                 this.last_last_move = last_move;
                 this.last_move=3;
+            }
+            else if ((orientacion[2] >= 100 && orientacion[2] <= 170) &&
+                    ((orientacion[1]>355&&orientacion[1]<360) || (orientacion[1] > 0 && orientacion[1] < 5)) ){
+                //camina hacia delante
+                Log.d(TAG,"jdkflñasjkfñjsaklfjaksdlñfjklsañjfklñasdjfklñsjadkjasjfkafjd");
+                this.last_last_move = last_move;
+                this.last_move=2;
             }
             else {
                 this.last_last_move = last_move;
